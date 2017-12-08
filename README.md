@@ -1,2 +1,2 @@
 # Network_program
-codes for network covariance estimation
+codes for network based large covariance matrix estimation
