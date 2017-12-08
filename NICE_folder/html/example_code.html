@@ -1,0 +1,185 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>NICE network detection and thresholding example</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-07"><meta name="DC.source" content="example_code.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>NICE network detection and thresholding example</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Network detection</a></li><li><a href="#2">In and Out network thresholding</a></li></ul></div><h2 id="1">Network detection</h2><p>NICE function analyzes the data and detects the hidden comuunity, and the heatmap of the input data and reordered data is shown beneath the code</p><pre class="codeinput">    addpath(<span class="string">'C:/Users/Yishi/Dropbox/NICE_marker/NICE_folder/NICE_detection'</span>)
+    w=csvread(<span class="string">'w.csv'</span>);
+    cor_f=csvread(<span class="string">'cor_fvicc.csv'</span>);
+    cor=(exp(cor_f*2)-1)./(exp(cor_f*2)+1);
+
+
+    [CindxVICC,CIDVICC,ClistVICC]=NICE(w, 0.2, 0, 1);
+    warning <span class="string">off</span>;
+    cor_w=squareform(cor);
+    figure;imagesc(cor_w);colormap <span class="string">jet</span>;colorbar;snapnow
+    figure;imagesc(cor_w(ClistVICC,ClistVICC));colormap <span class="string">jet</span>;colorbar;snapnow
+</pre><img vspace="5" hspace="5" src="example_code_01.png" alt=""> <img vspace="5" hspace="5" src="example_code_02.png" alt=""> <h2 id="2">In and Out network thresholding</h2><p>The correlation is separated into in-network and out-network groups based on the</p><pre class="codeinput">    addpath(<span class="string">'C:/Users/Yishi/Dropbox/NICE_marker/NICE_folder/In_n_Out_thres'</span>)
+    edge_ind_matrix=zeros(184,184);
+    <span class="keyword">for</span> i=1:8
+
+        edge_ind_matrix(CindxVICC==CIDVICC(i),CindxVICC==CIDVICC(i))=1;
+    <span class="keyword">end</span>
+    <span class="keyword">for</span> i=1:184
+        edge_ind_matrix(i,i)=0;
+    <span class="keyword">end</span>
+    in_edge_ind=find(squareform(edge_ind_matrix)==1);
+    out_edge_ind=find(squareform(edge_ind_matrix)==0);
+
+
+    CorZVICC_n0_in=cor_f(in_edge_ind);
+    CorZVICC_n0_out=cor_f(out_edge_ind);
+
+    cd <span class="string">C:/Users/Yishi/Dropbox/NICE_marker/NICE_folder/In_n_Out_thres</span>
+    csvwrite(<span class="string">'all.csv'</span>,cor_f);
+    csvwrite(<span class="string">'in.csv'</span>,CorZVICC_n0_in);
+    csvwrite(<span class="string">'out.csv'</span>,CorZVICC_n0_out);
+
+    system(<span class="string">'R CMD BATCH myloccov2.R'</span>);
+    system(<span class="string">'R CMD BATCH mylocfdr.R'</span>);
+    system(<span class="string">'R CMD BATCH mylocmle.R'</span>);
+    system(<span class="string">'R CMD BATCH locfdr_in_n_out.R'</span>);
+
+    edge_length=length(cor_f);
+    locfdr_all_in_out=csvread(<span class="string">'fdr_p0.csv'</span>);
+    p0_all=locfdr_all_in_out(edge_length+1);
+    p0_in=locfdr_all_in_out(edge_length+2);
+    p0_out=locfdr_all_in_out(edge_length+3);
+    locfdr_list=locfdr_all_in_out(1:edge_length);
+    thres_in=1/(4*p0_in/(1-p0_in)*(1-p0_all)/p0_all+1);
+    thres_out=1/(4*p0_out/(1-p0_out)*(1-p0_all)/p0_all+1);
+
+    locfdr_thres=locfdr_list;
+    locfdr_thres(in_edge_ind)=locfdr_list(in_edge_ind)&lt;=thres_in;
+    locfdr_thres(out_edge_ind)=locfdr_list(out_edge_ind)&lt;=thres_out;
+    VICC_thres=squareform(locfdr_thres);
+    figure;imagesc(VICC_thres(ClistVICC,ClistVICC));colormap <span class="string">jet</span>;colorbar;snapnow
+</pre><img vspace="5" hspace="5" src="example_code_03.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% NICE network detection and thresholding example
+
+    %% Network detection
+    % NICE function analyzes the data and detects the hidden comuunity, and the heatmap of the input data and reordered data is shown beneath the code
+    
+    addpath('C:/Users/Yishi/Dropbox/NICE_marker/NICE_folder/NICE_detection')
+    w=csvread('w.csv');
+    cor_f=csvread('cor_fvicc.csv');
+    cor=(exp(cor_f*2)-1)./(exp(cor_f*2)+1);
+    
+    
+    [CindxVICC,CIDVICC,ClistVICC]=NICE(w, 0.2, 0, 1);
+    warning off;
+    cor_w=squareform(cor);
+    figure;imagesc(cor_w);colormap jet;colorbar;snapnow
+    figure;imagesc(cor_w(ClistVICC,ClistVICC));colormap jet;colorbar;snapnow
+
+
+    %% In and Out network thresholding
+    % The correlation is separated into in-network and out-network groups
+    % based on the 
+    addpath('C:/Users/Yishi/Dropbox/NICE_marker/NICE_folder/In_n_Out_thres')
+    edge_ind_matrix=zeros(184,184);
+    for i=1:8
+
+        edge_ind_matrix(CindxVICC==CIDVICC(i),CindxVICC==CIDVICC(i))=1;
+    end
+    for i=1:184
+        edge_ind_matrix(i,i)=0;
+    end
+    in_edge_ind=find(squareform(edge_ind_matrix)==1);
+    out_edge_ind=find(squareform(edge_ind_matrix)==0);
+    
+    
+    CorZVICC_n0_in=cor_f(in_edge_ind);
+    CorZVICC_n0_out=cor_f(out_edge_ind);
+    
+    cd C:/Users/Yishi/Dropbox/NICE_marker/NICE_folder/In_n_Out_thres
+    csvwrite('all.csv',cor_f);
+    csvwrite('in.csv',CorZVICC_n0_in);
+    csvwrite('out.csv',CorZVICC_n0_out);
+
+    system('R CMD BATCH myloccov2.R');
+    system('R CMD BATCH mylocfdr.R');
+    system('R CMD BATCH mylocmle.R');
+    system('R CMD BATCH locfdr_in_n_out.R');
+    
+    edge_length=length(cor_f);
+    locfdr_all_in_out=csvread('fdr_p0.csv');
+    p0_all=locfdr_all_in_out(edge_length+1);
+    p0_in=locfdr_all_in_out(edge_length+2);
+    p0_out=locfdr_all_in_out(edge_length+3);
+    locfdr_list=locfdr_all_in_out(1:edge_length);
+    thres_in=1/(4*p0_in/(1-p0_in)*(1-p0_all)/p0_all+1);
+    thres_out=1/(4*p0_out/(1-p0_out)*(1-p0_all)/p0_all+1);
+
+    locfdr_thres=locfdr_list;
+    locfdr_thres(in_edge_ind)=locfdr_list(in_edge_ind)<=thres_in;
+    locfdr_thres(out_edge_ind)=locfdr_list(out_edge_ind)<=thres_out;
+    VICC_thres=squareform(locfdr_thres);
+    figure;imagesc(VICC_thres(ClistVICC,ClistVICC));colormap jet;colorbar;snapnow
+
+##### SOURCE END #####
+--></body></html>
